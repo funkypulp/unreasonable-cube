@@ -1,82 +1,132 @@
-# CubeBot — with_hardware
+# Unreasonable Cube
 
-Single ESP32-S3 + ST7796 4" TFT + EC11 encoder test.
-Face 0 (Red) only for now — expand to all 6 once validated.
+**A tangible AI oracle built from a Rubik's Cube.**
+
+> *When you're stuck on a problem, the worst thing you can do is keep thinking about it the same way.*
+
+![Unreasonable Cube](assets/cube.jpg)
+
+---
+
+## What It Is
+
+Most AI interfaces are linear — you type, it responds, you go deeper into the same thread of thought. Unreasonable Cube is an attempt to break that pattern.
+
+You speak a challenge into the cube. It maps your challenge to **six perspectives** — the different facets of how humans naturally understand a problem: emotional affinity, relationships, timing, systemic forces, blind spots, and the angle you haven't named yet. Each perspective is assigned to a face of the cube.
+
+You then rotate the cube's gears to shift the weight between perspectives, and press a face to select your primary lens. The cube asks up to four follow-up questions shaped by the full weight distribution you've dialed in. Then it speaks a short speculative story — vivid, specific, set seven years from now — that reflects the blend of perspectives you chose.
+
+The experience takes about three minutes. It doesn't give you an answer. It gives you a more honest question.
+
+---
+
+## How It Works
+
+```
+You speak a challenge
+        ↓
+Claude maps it to 6 perspectives (one per face)
+        ↓
+You rotate the cube → shifts perspective weights
+        ↓
+You press a face → selects primary lens
+        ↓
+Claude asks follow-up questions (up to 4)
+        ↓
+Claude speaks a speculative future story
+```
+
+---
+
+## Hardware
+
+- 5× ESP32 microcontrollers
+- 5× 4" ST7796 TFT displays
+- 5× EC11 rotary encoders
+- Custom 3D printed mechanical enclosure with gear-based encoder decoupling system
+- Connected to laptop via USB
+
+Each face has one screen, one encoder, and one ESP32. The gear system — designed by Tim — lets you rotate the encoder by turning the outer gear ring without touching or stressing the screen behind it.
+
+---
+
+## Software Stack
+
+| Component | Technology |
+|-----------|------------|
+| AI | Claude API (claude-sonnet) |
+| Speech-to-text | OpenAI Whisper |
+| Text-to-speech | macOS native |
+| Firmware | Arduino (C++) + Arduino GFX Library |
+| Application | Python |
+
+---
+
+## Project Structure
+
+```
+cubebot_with_hardware/
+├── main.py          — main interaction loop
+├── config.py        — serial ports, model settings, tuning
+├── ai_brain.py      — Claude API calls (perspectives + story)
+├── state.py         — conversation state
+├── weights.py       — Rubik's-style weight rotation logic
+├── voice.py         — speech input/output
+├── serial_comm.py   — USB communication with ESP32s
+└── esp32/
+    └── cubebot_esp32.ino   — ESP32 firmware
+```
+
+---
 
 ## Setup
 
-### 1. Install Python dependencies
+### Requirements
 ```bash
-pip install pyserial openai-whisper sounddevice numpy
+pip install openai-whisper sounddevice numpy anthropic pyserial
 ```
 
-### 2. Flash the ESP32
-
-Open `esp32/cubebot_esp32.ino` in Arduino IDE.
-
-**Board settings:**
-- Board: ESP32S3 Dev Module
-- USB Mode: USB-OTG (TinyUSB)
-- Upload Speed: 921600
-
-**Before flashing, edit TFT_eSPI/User_Setup.h:**
-```cpp
-#define ST7796_DRIVER
-#define TFT_WIDTH  320
-#define TFT_HEIGHT 480
-#define TFT_MOSI   11
-#define TFT_SCLK   12
-#define TFT_CS     10
-#define TFT_DC      9
-#define TFT_RST     8
-#define SPI_FREQUENCY 40000000
-```
-
-**Libraries needed (Arduino Library Manager):**
-- TFT_eSPI (by Bodmer)
-- ArduinoJson
-
-### 3. Wiring
-
-| ST7796 Pin | ESP32-S3 Pin |
-|------------|--------------|
-| MOSI       | GPIO 11      |
-| SCLK       | GPIO 12      |
-| CS         | GPIO 10      |
-| DC         | GPIO 9       |
-| RST        | GPIO 8       |
-| VCC        | 3.3V         |
-| GND        | GND          |
-
-| EC11 Pin | ESP32-S3 Pin |
-|----------|--------------|
-| CLK (A)  | GPIO 4       |
-| DT  (B)  | GPIO 5       |
-| SW       | GPIO 6       |
-| +        | 3.3V         |
-| GND      | GND          |
-
-### 4. Find your serial port
-```bash
-ls /dev/cu.usb*
-```
-Update `SERIAL_PORTS` in `config.py` with the correct port.
-
-### 5. Run
+### API Key
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
+```
+
+### Serial Ports
+Plug in your ESP32s, find their ports:
+```bash
+ls /dev/cu.*
+```
+
+Update `SERIAL_PORTS` in `config.py` to map each port to the correct face:
+```python
+SERIAL_PORTS = {
+    0: "/dev/cu.usbserial-0001",   # red
+    1: "/dev/cu.usbserial-0002",   # orange
+    ...
+}
+```
+
+### Run
+```bash
 python main.py
 ```
 
-## What to expect
-1. Screen shows "waiting..." on boot
-2. Press Enter on laptop → speak challenge
-3. Screen updates with dimension label + weight bar
-4. Turn encoder → weight bar updates on screen
-5. Press encoder button → triggers AI response
-6. Story appears on screen + spoken aloud
+---
 
-## If the screen is blank
-- Check TFT_eSPI User_Setup.h pins match your wiring
-- Try `tft.setRotation(1)` in the .ino if orientation is wrong
-- Verify 3.3V supply — 5V will damage the screen
+## The Team
+
+Built at the **MIT Hardware + AI Hackathon**
+
+| Person | Role |
+|--------|------|
+
+| Tim Qi | Product & Mechanical cube |
+| Haoyang Li | Mechanical cube & hardware |
+| Pranav Chaparala | Hardware |
+| Shu Ou | Software & AI |
+
+---
+
+## Devpost
+
+[Read the full project writeup →](https://devpost.com/software/team-18-unreasonable-cube)
