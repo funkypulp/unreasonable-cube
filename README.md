@@ -31,7 +31,7 @@ You rotate the cube → shifts perspective weights
         ↓
 You press a face → selects primary lens
         ↓
-Claude asks follow-up questions (up to 4)
+Claude asks follow-up questions
         ↓
 Claude speaks a speculative future story
 ```
@@ -46,7 +46,7 @@ Claude speaks a speculative future story
 - Custom 3D printed mechanical enclosure with gear-based encoder decoupling system
 - Connected to laptop via USB
 
-Each face has one screen, one encoder, and one ESP32. The gear system — designed by Tim — lets you rotate the encoder by turning the outer gear ring without touching or stressing the screen behind it.
+Each face has one screen, one encoder, and one ESP32. The gear system lets you rotate the encoder by turning the outer gear ring without touching or stressing the screen behind it.
 
 ---
 
@@ -120,10 +120,10 @@ Built at the **MIT Hardware + AI Hackathon**
 | Person | Role |
 |--------|------|
 
-| Tim Qi | Product & Mechanical cube |
-| Haoyang Li | Mechanical cube & hardware |
-| Pranav Chaparala | Hardware |
-| Shu Ou | Software & AI |
+| Tim Qi (Product & Mechanical cube)
+| Haoyang Li (Mechanical cube & hardware)
+| Pranav Chaparala (Hardware)
+| Shu Ou (Software & AI)
 
 ---
 
